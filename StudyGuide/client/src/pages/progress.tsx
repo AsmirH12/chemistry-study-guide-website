@@ -34,8 +34,14 @@ export default function ProgressPage() {
     const progressForTopics = topics.map((topic) => {
       const stored = storedProgress.find((p) => p.topicId === topic.id);
       const studyTime = studyTimes.find((st) => st.topicId === topic.id);
+      const highestQuizScore = LocalStorageManager.getHighestQuizScoreForTopic(
+        topic.id
+      );
 
-      const progress = stored ? stored.progress : 0;
+      // Use the highest of stored progress or quiz score
+      const storedProgressValue = stored ? stored.progress : 0;
+      const progress = Math.max(storedProgressValue, highestQuizScore);
+
       const timeSpent = studyTime
         ? LocalStorageManager.formatTime(studyTime.timeSpent)
         : "0m";
@@ -101,8 +107,14 @@ export default function ProgressPage() {
     const progressForTopics = topics.map((topic) => {
       const stored = storedProgress.find((p) => p.topicId === topic.id);
       const studyTime = studyTimes.find((st) => st.topicId === topic.id);
+      const highestQuizScore = LocalStorageManager.getHighestQuizScoreForTopic(
+        topic.id
+      );
 
-      const progress = stored ? stored.progress : 0;
+      // Use the highest of stored progress or quiz score
+      const storedProgressValue = stored ? stored.progress : 0;
+      const progress = Math.max(storedProgressValue, highestQuizScore);
+
       const timeSpent = studyTime
         ? LocalStorageManager.formatTime(studyTime.timeSpent)
         : "0m";

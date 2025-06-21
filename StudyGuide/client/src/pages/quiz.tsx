@@ -46,18 +46,18 @@ export default function QuizPage() {
   };
 
   useEffect(() => {
-    // Get quiz statistics from local storage - all quizzes combined
-    const quizAttempts = LocalStorageManager.getQuizAttempts();
+    // Get quiz statistics from local storage - only course quizzes (easy, medium, hard)
+    const courseQuizAttempts = LocalStorageManager.getCourseQuizAttempts();
 
-    if (quizAttempts.length > 0) {
-      const totalAttempts = quizAttempts.length;
-      const totalScore = quizAttempts.reduce(
+    if (courseQuizAttempts.length > 0) {
+      const totalAttempts = courseQuizAttempts.length;
+      const totalScore = courseQuizAttempts.reduce(
         (sum, attempt) => sum + attempt.score,
         0
       );
       const averageScore = Math.round(totalScore / totalAttempts);
       const bestScore = Math.max(
-        ...quizAttempts.map((attempt) => attempt.score)
+        ...courseQuizAttempts.map((attempt) => attempt.score)
       );
 
       setQuizStats({
@@ -70,17 +70,17 @@ export default function QuizPage() {
 
   // Function to refresh quiz statistics
   const refreshQuizStats = () => {
-    const quizAttempts = LocalStorageManager.getQuizAttempts();
+    const courseQuizAttempts = LocalStorageManager.getCourseQuizAttempts();
 
-    if (quizAttempts.length > 0) {
-      const totalAttempts = quizAttempts.length;
-      const totalScore = quizAttempts.reduce(
+    if (courseQuizAttempts.length > 0) {
+      const totalAttempts = courseQuizAttempts.length;
+      const totalScore = courseQuizAttempts.reduce(
         (sum, attempt) => sum + attempt.score,
         0
       );
       const averageScore = Math.round(totalScore / totalAttempts);
       const bestScore = Math.max(
-        ...quizAttempts.map((attempt) => attempt.score)
+        ...courseQuizAttempts.map((attempt) => attempt.score)
       );
 
       setQuizStats({

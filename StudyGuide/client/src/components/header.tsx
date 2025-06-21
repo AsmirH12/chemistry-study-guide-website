@@ -26,13 +26,15 @@ export function Header({ progress }: HeaderProps) {
           </div>
 
           <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2 bg-ib-neutral-100 px-3 py-2 rounded-lg">
-              <span className="text-sm text-ib-neutral-700">Progress:</span>
-              <Progress value={progress} className="w-16 h-2" />
-              <span className="text-sm font-medium text-ib-secondary">
-                {progress}%
-              </span>
-            </div>
+            <Link href="/progress">
+              <div className="flex items-center space-x-2 bg-ib-neutral-100 px-3 py-2 rounded-lg cursor-pointer hover:bg-ib-neutral-200 transition-colors">
+                <span className="text-sm text-ib-neutral-700">Progress:</span>
+                <Progress value={progress} className="w-16 h-2" />
+                <span className="text-sm font-medium text-ib-secondary">
+                  {progress}%
+                </span>
+              </div>
+            </Link>
           </div>
         </div>
       </div>

@@ -75,13 +75,24 @@ export class LocalStorageManager {
         : "not-started";
 
     if (existingIndex >= 0) {
-      allProgress[existingIndex] = {
-        ...allProgress[existingIndex],
-        progress,
-        timeSpent: allProgress[existingIndex].timeSpent + timeSpent,
-        lastStudied: now,
-        status,
-      };
+      // Only update if the new progress is higher than existing progress
+      const existingProgress = allProgress[existingIndex].progress;
+      if (progress > existingProgress) {
+        allProgress[existingIndex] = {
+          ...allProgress[existingIndex],
+          progress,
+          timeSpent: allProgress[existingIndex].timeSpent + timeSpent,
+          lastStudied: now,
+          status,
+        };
+      } else {
+        // Still update time spent and last studied even if progress doesn't change
+        allProgress[existingIndex] = {
+          ...allProgress[existingIndex],
+          timeSpent: allProgress[existingIndex].timeSpent + timeSpent,
+          lastStudied: now,
+        };
+      }
     } else {
       allProgress.push({
         topicId,
@@ -98,6 +109,20 @@ export class LocalStorageManager {
   static getProgressForTopic(topicId: number): LocalProgress | null {
     const allProgress = this.getProgress();
     return allProgress.find((p) => p.topicId === topicId) || null;
+  }
+
+  static getHighestQuizScoreForTopic(topicId: number): number {
+    const allAttempts = this.getQuizAttempts();
+    // Filter attempts for the specific topic (mapping quiz difficulties to topics)
+    const topicAttempts = allAttempts.filter((attempt) => {
+      if (topicId === 1) return attempt.quizId === 1; // Easy quiz maps to topic 1
+      if (topicId === 3) return attempt.quizId === 2; // Medium quiz maps to topic 3
+      if (topicId === 5) return attempt.quizId === 3; // Hard quiz maps to topic 5
+      return false;
+    });
+
+    if (topicAttempts.length === 0) return 0;
+    return Math.max(...topicAttempts.map((attempt) => attempt.score));
   }
 
   // Quiz attempts management
@@ -125,6 +150,15 @@ export class LocalStorageManager {
   static getQuizAttemptsForQuiz(quizId: number): QuizAttempt[] {
     const allAttempts = this.getQuizAttempts();
     return allAttempts.filter((attempt) => attempt.quizId === quizId);
+  }
+
+  static getCourseQuizAttempts(): QuizAttempt[] {
+    const allAttempts = this.getQuizAttempts();
+    // Filter for only the main course quizzes (easy=1, medium=2, hard=3)
+    return allAttempts.filter(
+      (attempt) =>
+        attempt.quizId === 1 || attempt.quizId === 2 || attempt.quizId === 3
+    );
   }
 
   static getQuizStats(quizId: number) {

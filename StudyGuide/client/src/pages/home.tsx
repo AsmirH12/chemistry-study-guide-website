@@ -129,14 +129,6 @@ export default function Home() {
 
   const helpfulResources = [
     {
-      id: 1,
-      title: "IB Chemistry Guide",
-      description: "Official IB Chemistry subject guide and syllabus",
-      url: "https://www.ibo.org/programmes/diploma-programme/curriculum/sciences/chemistry/",
-      icon: Book,
-      category: "Official Resources",
-    },
-    {
       id: 2,
       title: "Khan Academy Chemistry",
       description: "Free video lessons and practice problems",
@@ -157,7 +149,7 @@ export default function Home() {
       id: 4,
       title: "Bozeman Science",
       description: "AP and IB Chemistry video lessons by Paul Andersen",
-      url: "https://www.youtube.com/c/bozemanbiology",
+      url: "https://www.youtube.com/@Bozemanscience1",
       icon: Play,
       category: "Learning",
     },
@@ -166,14 +158,6 @@ export default function Home() {
       title: "MolView",
       description: "3D molecular visualization and chemical structure viewer",
       url: "https://molview.org/",
-      icon: Calculator,
-      category: "Reference",
-    },
-    {
-      id: 6,
-      title: "ChemSpider",
-      description: "Chemical structure database and search engine",
-      url: "http://www.chemspider.com/",
       icon: Calculator,
       category: "Reference",
     },
@@ -187,9 +171,10 @@ export default function Home() {
     },
     {
       id: 8,
-      title: "RSC Periodic Table",
-      description: "Interactive periodic table from Royal Society of Chemistry",
-      url: "https://www.rsc.org/periodic-table",
+      title: "PTables",
+      description:
+        "Interactive periodic table with detailed element information",
+      url: "https://ptable.com/",
       icon: Globe,
       category: "Reference",
     },

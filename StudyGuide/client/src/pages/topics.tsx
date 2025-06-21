@@ -79,11 +79,7 @@ export default function TopicsPage() {
                     <Progress value={progress} className="w-full h-2" />
                   </div>
 
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {estimatedTime} hours
-                    </div>
+                  <div className="flex items-center justify-end mt-4 pt-3 border-t border-gray-100">
                     <div className="flex items-center text-xs text-gray-500">
                       <Users className="w-3 h-3 mr-1" />
                       {progress > 0 ? "In Progress" : "Not Started"}

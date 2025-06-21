@@ -73,7 +73,8 @@ export function QuizCard({ quiz }: QuizCardProps) {
 
       // Store quiz attempt in local storage
       LocalStorageManager.addQuizAttempt({
-        quizId: parseInt(quiz.id) || 1, // Convert string to number, fallback to 1
+        quizId:
+          quiz.difficulty === "easy" ? 1 : quiz.difficulty === "medium" ? 2 : 3,
         quizTitle: quiz.title,
         score: finalScore,
         totalQuestions: questions.length,
@@ -90,9 +91,10 @@ export function QuizCard({ quiz }: QuizCardProps) {
       });
 
       // Update progress based on quiz performance
-      // For now, we'll update a general topic progress
-      // In a real app, you'd map quiz IDs to specific topics
-      const topicId = parseInt(quiz.id) || 1;
+      // Map quiz difficulties to topic IDs (1-7 for the 7 topics)
+      // For now, we'll distribute the quizzes across topics
+      const topicId =
+        quiz.difficulty === "easy" ? 1 : quiz.difficulty === "medium" ? 3 : 5;
       const timeSpentMinutes = Math.round(actualTimeSpent / 60); // Convert seconds to minutes
 
       if (finalScore === 100) {
@@ -112,7 +114,7 @@ export function QuizCard({ quiz }: QuizCardProps) {
       // Dispatch custom event to notify other components to refresh
       window.dispatchEvent(
         new CustomEvent("quizCompleted", {
-          detail: { quizId: quiz.id, score: finalScore, topicId },
+          detail: { quizId: quiz.difficulty, score: finalScore, topicId },
         })
       );
     }
