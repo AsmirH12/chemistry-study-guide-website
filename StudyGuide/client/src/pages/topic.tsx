@@ -1,5 +1,4 @@
 import { useParams } from "wouter";
-import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, Lightbulb, Calculator } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QuizCard } from "@/components/quiz-card";
 import { MolecularViewer } from "@/components/molecular-viewer";
 import { topicQuizQuestions } from "@/lib/topic-quiz-data";
-import type { Topic, Quiz } from "@shared/schema";
+import { topics } from "@/lib/topics";
+import type { Topic } from "@shared/schema";
 
 // Define local Quiz interface for topic quizzes
 interface LocalQuiz {
@@ -175,10 +175,8 @@ const topicFormulas: Record<string, any[]> = {
 export default function TopicPage() {
   const { slug } = useParams();
 
-  const { data: topic, isLoading } = useQuery<Topic>({
-    queryKey: [`/api/topics/${slug}`],
-    enabled: !!slug,
-  });
+  // Find topic from static data instead of API call
+  const topic = topics.find((t) => t.slug === slug);
 
   // Create topic-specific quiz
   const getTopicQuiz = (): LocalQuiz | null => {
@@ -196,14 +194,6 @@ export default function TopicPage() {
   };
 
   const topicQuiz = getTopicQuiz();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-64">
-        <div className="animate-spin w-8 h-8 border-4 border-ib-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
 
   if (!topic) {
     return (
@@ -242,7 +232,9 @@ export default function TopicPage() {
             <h1 className="text-3xl font-bold text-ib-neutral-800 mb-2">
               {topic.title}
             </h1>
-            <p className="text-gray-600">{topic.description}</p>
+            <p className="text-gray-600">
+              Master the fundamental concepts of {topic.title.toLowerCase()}
+            </p>
           </div>
         </div>
       </div>
@@ -264,133 +256,91 @@ export default function TopicPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {topic.content &&
-                  typeof topic.content === "object" &&
-                  "concepts" in topic.content &&
-                  (topic.content.concepts as any[]).map(
-                    (concept: any, index: number) => (
-                      <div
-                        key={index}
-                        className="border-l-4 border-ib-primary pl-4"
-                      >
-                        <h3 className="font-semibold text-ib-neutral-800 mb-2">
-                          {concept.title}
-                        </h3>
-                        <p className="text-gray-600 mb-3">
-                          {concept.description}
+                {/* Static content for each topic */}
+                {topic.slug === "stoichiometric-relationships" && (
+                  <div className="space-y-6">
+                    <div className="border-l-4 border-ib-primary pl-4">
+                      <h3 className="font-semibold text-ib-neutral-800 mb-2">
+                        The Mole Concept
+                      </h3>
+                      <p className="text-gray-600 mb-3">
+                        The mole is a fundamental unit in chemistry that
+                        represents 6.022 × 10²³ particles (Avogadro's number).
+                        It bridges the gap between atomic/molecular scale and
+                        macroscopic quantities.
+                      </p>
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <p className="text-sm font-mono text-ib-primary">
+                          n = m/M
+                          <br />
+                          <span className="text-xs text-gray-600">
+                            where n = number of moles, m = mass (g), M = molar
+                            mass (g/mol)
+                          </span>
                         </p>
-                        {concept.formula && (
-                          <div className="bg-blue-50 p-4 rounded-lg">
-                            <p className="text-sm font-mono text-ib-primary">
-                              {concept.formula}
-                              {concept.explanation && (
-                                <>
-                                  <br />
-                                  <span className="text-xs text-gray-600">
-                                    {concept.explanation}
-                                  </span>
-                                </>
-                              )}
-                            </p>
-                          </div>
-                        )}
-                        {concept.energyOrder && (
-                          <div className="bg-orange-50 p-4 rounded-lg">
-                            <p className="text-sm font-medium text-ib-neutral-700 mb-1">
-                              Energy Order:
-                            </p>
-                            <p className="text-sm font-mono text-ib-accent">
-                              {concept.energyOrder}
-                            </p>
-                          </div>
-                        )}
-                        {concept.examples && (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
-                            {concept.examples.map(
-                              (example: any, exIndex: number) => (
-                                <div
-                                  key={exIndex}
-                                  className="bg-green-50 p-3 rounded-lg"
-                                >
-                                  <p className="text-sm font-semibold text-ib-secondary">
-                                    {example.empirical
-                                      ? `Empirical: ${example.empirical}`
-                                      : example}
-                                  </p>
-                                  {example.molecular && (
-                                    <p className="text-sm font-semibold text-ib-secondary">
-                                      Molecular: {example.molecular}
-                                    </p>
-                                  )}
-                                  {example.name && (
-                                    <p className="text-xs text-gray-600">
-                                      {example.name}
-                                    </p>
-                                  )}
-                                </div>
-                              )
-                            )}
-                          </div>
-                        )}
-                        {concept.types && (
-                          <div className="mt-3">
-                            <p className="text-sm font-medium text-ib-neutral-700 mb-2">
-                              Types:
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                              {concept.types.map(
-                                (type: string, typeIndex: number) => (
-                                  <span
-                                    key={typeIndex}
-                                    className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded"
-                                  >
-                                    {type}
-                                  </span>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )}
-                        {concept.trends && (
-                          <div className="mt-3">
-                            <p className="text-sm font-medium text-ib-neutral-700 mb-2">
-                              Key Trends:
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                              {concept.trends.map(
-                                (trend: string, trendIndex: number) => (
-                                  <span
-                                    key={trendIndex}
-                                    className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
-                                  >
-                                    {trend}
-                                  </span>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )}
-                        {concept.shapes && (
-                          <div className="mt-3">
-                            <p className="text-sm font-medium text-ib-neutral-700 mb-2">
-                              Molecular Shapes:
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                              {concept.shapes.map(
-                                (shape: string, shapeIndex: number) => (
-                                  <span
-                                    key={shapeIndex}
-                                    className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded"
-                                  >
-                                    {shape}
-                                  </span>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )}
                       </div>
-                    )
+                    </div>
+
+                    <div className="border-l-4 border-ib-primary pl-4">
+                      <h3 className="font-semibold text-ib-neutral-800 mb-2">
+                        Solution Concentration
+                      </h3>
+                      <p className="text-gray-600 mb-3">
+                        Concentration expresses the amount of solute dissolved
+                        in a given amount of solution. Molarity is the most
+                        common unit in chemistry.
+                      </p>
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <p className="text-sm font-mono text-ib-primary">
+                          c = n/V
+                          <br />
+                          <span className="text-xs text-gray-600">
+                            where c = concentration (mol/L), n = moles of
+                            solute, V = volume of solution (L)
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {topic.slug === "atomic-structure" && (
+                  <div className="space-y-6">
+                    <div className="border-l-4 border-ib-primary pl-4">
+                      <h3 className="font-semibold text-ib-neutral-800 mb-2">
+                        Electron Configuration
+                      </h3>
+                      <p className="text-gray-600 mb-3">
+                        The arrangement of electrons in atomic orbitals follows
+                        the Aufbau principle, Hund's rule, and Pauli exclusion
+                        principle.
+                      </p>
+                      <div className="bg-orange-50 p-4 rounded-lg">
+                        <p className="text-sm font-medium text-ib-neutral-700 mb-1">
+                          Energy Order:
+                        </p>
+                        <p className="text-sm font-mono text-ib-accent">
+                          {
+                            "1s < 2s < 2p < 3s < 3p < 4s < 3d < 4p < 5s < 4d < 5p"
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Add more static content for other topics as needed */}
+                {topic.slug !== "stoichiometric-relationships" &&
+                  topic.slug !== "atomic-structure" && (
+                    <div className="border-l-4 border-ib-primary pl-4">
+                      <h3 className="font-semibold text-ib-neutral-800 mb-2">
+                        Coming Soon
+                      </h3>
+                      <p className="text-gray-600 mb-3">
+                        Detailed content for {topic.title} will be available
+                        soon.
+                      </p>
+                    </div>
                   )}
               </div>
             </CardContent>
@@ -398,36 +348,48 @@ export default function TopicPage() {
 
           {/* Quiz Section */}
           {topicQuiz && (
-            <div>
-              <h2 className="text-2xl font-bold text-ib-neutral-800 mb-4">
-                Practice Quiz
-              </h2>
-              <QuizCard quiz={topicQuiz} />
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-8">
-          {/* Formula Sheet for this topic */}
-          {topicFormulas[slug || ""] && (
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-lg text-ib-neutral-800 flex items-center">
-                  <Calculator className="w-5 h-5 mr-2 text-ib-primary" />
-                  Key Formulas
+                <CardTitle className="text-xl text-ib-neutral-800">
+                  Test Your Knowledge
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {topicFormulas[slug || ""].map((formula, index) => (
-                    <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                      <p className="text-sm font-medium text-ib-neutral-800">
+                <QuizCard quiz={topicQuiz} />
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Formula Sheet */}
+          {slug && topicFormulas[slug] && topicFormulas[slug].length > 0 && (
+            <Card className="bg-white shadow-lg">
+              <CardHeader>
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 bg-ib-secondary rounded-lg flex items-center justify-center mr-3">
+                    <Calculator className="text-white w-5 h-5" />
+                  </div>
+                  <CardTitle className="text-lg text-ib-neutral-800">
+                    Key Formulas
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {topicFormulas[slug].map((formula: any, index: number) => (
+                    <div
+                      key={index}
+                      className="border-l-4 border-ib-secondary pl-4"
+                    >
+                      <h4 className="font-semibold text-ib-neutral-800 text-sm">
                         {formula.name}
-                      </p>
-                      <p className="text-sm font-mono text-ib-primary">
+                      </h4>
+                      <p className="text-sm font-mono text-ib-secondary mb-1">
                         {formula.formula}
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-xs text-gray-600">
                         {formula.description}
                       </p>
                     </div>
@@ -437,8 +399,17 @@ export default function TopicPage() {
             </Card>
           )}
 
-          {/* Molecular Viewer for atomic structure only */}
-          {slug === "atomic-structure" && <MolecularViewer />}
+          {/* Molecular Viewer Placeholder */}
+          <Card className="bg-white shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-lg text-ib-neutral-800">
+                Interactive Models
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MolecularViewer />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
